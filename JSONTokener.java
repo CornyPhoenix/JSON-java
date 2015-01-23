@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.GregorianCalendar;
 
 /*
 Copyright (c) 2002 JSON.org
@@ -358,7 +359,7 @@ public class JSONTokener {
         switch (c) {
             case '"':
             case '\'':
-                return this.nextString(c);
+                return this.checkDates(this.nextString(c));
             case '{':
                 this.back();
                 return new JSONObject(this);
@@ -388,6 +389,34 @@ public class JSONTokener {
             throw this.syntaxError("Missing value");
         }
         return JSONObject.stringToValue(string);
+    }
+
+    /**
+     * Checks a string for dates.
+     *
+     * @param s string to check
+     * @return passed through string or a Date object
+     */
+    private Object checkDates(String s) {
+        if (s.length() == 10 || s.length() == 20) {
+            if (s.charAt(4) == '-' && s.charAt(7) == '-') {
+                int year = Integer.valueOf(s.substring(0, 4));
+                int month = Integer.valueOf(s.substring(5, 7));
+                int day = Integer.valueOf(s.substring(8, 10));
+
+                if (s.length() == 20 && s.charAt(10) == 'T' && s.charAt(13) == ':' && s.charAt(16) == ':' && s.charAt(19) == 'Z') {
+                    int hour = Integer.valueOf(s.substring(11, 13));
+                    int mins = Integer.valueOf(s.substring(14, 16));
+                    int secs = Integer.valueOf(s.substring(17, 19));
+
+                    return new GregorianCalendar(year, month, day, hour, mins, secs).getTime();
+                }
+
+                return new GregorianCalendar(year, month, day).getTime();
+            }
+        }
+
+        return s;
     }
 
 

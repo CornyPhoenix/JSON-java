@@ -31,6 +31,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -579,6 +580,24 @@ public class JSONObject {
         }
         throw new JSONException("JSONObject[" + quote(key)
                 + "] is not a JSONObject.");
+    }
+
+    /**
+     * Get the Date value associated with a key.
+     *
+     * @param key
+     *            A key string.
+     * @return A JSONObject which is the value.
+     * @throws JSONException
+     *             if the key is not found or if the value is not a JSONObject.
+     */
+    public Date getDate(String key) throws JSONException {
+        Object object = this.get(key);
+        if (object instanceof Date) {
+            return (Date) object;
+        }
+        throw new JSONException("JSONObject[" + quote(key)
+                + "] is not a Date.");
     }
 
     /**
